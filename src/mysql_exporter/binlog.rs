@@ -1,0 +1,28 @@
+
+
+struct BinlogVariables {
+    binlog_cache_size: i32,
+    binlog_checksum: String,
+    binlog_direct_non_transactional_updates: String,
+    binlog_encryption: String,
+    binlog_error_action: String,
+    binlog_expire_logs_auto_purge: String,
+    binlog_expire_logs_seconds: i32,
+    binlog_format: String,
+    binlog_group_commit_sync_delay: i32,
+    binlog_group_commit_sync_no_delay_count: i32,
+    binlog_gtid_simple_recovery: String,
+    binlog_max_flush_queue_time: i32,
+    binlog_order_commits: String,
+    binlog_rotate_encryption_master_key_at_startup: String,
+    binlog_row_event_max_size: i32,
+    binlog_row_image: String,
+    binlog_row_metadata: String,
+    binlog_row_value_options: String,
+    binlog_rows_query_log_events: String,
+    binlog_stmt_cache_size: i32,
+    binlog_transaction_compression: String,
+    binlog_transaction_compression_level_zstd: i32,
+    binlog_transaction_dependency_history_size: i32,
+    binlog_transaction_dependency_tracking: String,
+}
