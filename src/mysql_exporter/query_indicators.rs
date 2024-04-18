@@ -1,3 +1,4 @@
+use std::io;
 use std::io::Error;
 use std::str::FromStr;
 
@@ -55,13 +56,14 @@ impl MysqlInfo {
         let result: Vec<Variable> = sqlx::query_as("SHOW VARIABLES LIKE $1")
             .bind(variable_name)
             .fetch_all(conn)
-            .await?;
+            .await
+            .map_err(|err| Error::new(io::ErrorKind::Other, err.to_string()))?;
 
         // 解析结果，获取 Value 列的值并转换为指定类型
         let value = result.into_iter()
             .find(|variable| variable.variable_name == variable_name)
             .and_then(|variable| variable.value.parse::<T>().ok())
-            .ok_or_else(|| MySqlDatabaseError::new(format!("{:?} variable not found", variable_name)))?;
+            .ok_or_else(|| MySqlDatabaseError::message(format!("{:?} variable not found", variable_name)))?;
 
         Ok(value)
     }

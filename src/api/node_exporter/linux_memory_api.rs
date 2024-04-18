@@ -1,3 +1,4 @@
+use std::convert::Infallible;
 use std::error::Error;
 use axum::{Json, Router, routing::{get, post}};
 
@@ -45,7 +46,7 @@ async fn memory_used_handler() -> Json<Option<f64>> {
     }
 }
 
-async fn memory_info_and_used_handler() -> Json<Option<MemoryStats>> {
+async fn memory_info_and_used_handler() -> Result<Json<Option<MemoryStats>>, Infallible> {
     match init_memory_info().await {
         Ok(memory_info) => {
             let used = calculate_memory_used(&memory_info);
@@ -53,11 +54,11 @@ async fn memory_info_and_used_handler() -> Json<Option<MemoryStats>> {
                 meminfo: memory_info,
                 used,
             };
-            Json(Some(result))
+            Ok(Json(Some(result)))
         },
         Err(e) => {
             eprintln!("Failed to retrieve memory stats: {}", e);
-            Json(None)
+            Ok(Json(None))
         }
     }
 }

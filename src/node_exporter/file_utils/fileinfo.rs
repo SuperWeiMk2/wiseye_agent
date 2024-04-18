@@ -8,8 +8,8 @@ use std::{
 };
 use std::time::SystemTime;
 
-use libc::{c_short, stat};
 use walkdir::WalkDir;
+use libc::{c_short, stat};
 
 // FileInfo 结构体包含了一个文件或目录的路径和元数据
 pub struct FileInfo {
@@ -25,7 +25,7 @@ impl FileInfo {
     {
         let metadata = fs::metadata(path)?;
         Ok(Self {
-            path: path.to_path_buf(),
+            path: path.as_ref().to_path_buf(),
             metadata,
         })
     }
@@ -37,15 +37,21 @@ impl FileInfo {
         let result = unsafe { libc::stat(c_path.as_ptr(), &mut s) };
 
         if result != 0 {
-            return Err(std::io::Error::last_os_error());
+            return Err(io::Error::last_os_error());
         }
 
-        Ok((unsafe { s.st_uid.try_into()? }, unsafe { s.st_gid.try_into()? }))
+        /*Ok((unsafe { s.st_uid.try_into()? }, unsafe { s.st_gid.try_into()? }))*/
+        let uid = unsafe { s.st_uid };
+        let gid = unsafe { s.st_gid };
+
+        let uid_res = uid.try_into().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+        let gid_res = gid.try_into().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+        Ok((uid_res, gid_res))
     }
 
     // create_time 方法用于获取文件的创建时间
-    pub fn create_time(&self) -> std::io::Error::Result<SystemTime> {
-        Ok(self.metadata.created())
+    pub fn create_time(&self) -> io::Result<SystemTime> {
+        self.metadata.created()
     }
 
     // get_file_update_time 方法用于获取文件的修改时间
@@ -55,7 +61,7 @@ impl FileInfo {
 }
 
 // get_current_directory 获取当前所在目录的路径
-fn get_current_directory() -> std::io::Result<std::path::PathBuf> {
+fn get_current_directory() -> io::Result<PathBuf> {
     current_dir()
 }
 

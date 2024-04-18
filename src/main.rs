@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 use crate::router::routers::register_handlers;
 
 mod node_exporter {

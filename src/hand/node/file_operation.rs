@@ -8,11 +8,25 @@ pub fn delete_file<P>(path: P) -> io::Result<()>
     where
         P: AsRef<Path>
 {
-    if path.exists() {
+/*    if path.exists() {
         fs::remove_file(path)
     } else {
         Err(io::Error::new(io::ErrorKind::NotFound, "File not found"))
+    }*/
+
+    let path_ref = path.as_ref();
+
+    // 先检查文件是否存在
+    if let Ok(file) = File::open(path_ref) {
+        // 存在的话，删除文件
+        fs::remove_file(path_ref)?;
+    } else if let Err(e) = fs::remove_file(path_ref) {
+        // 如果文件不存在且删除操作也失败，则返回相应的错误
+        if e.kind() != io::ErrorKind::NotFound {
+            return Err(e);
+        }
     }
+    Ok(())
 }
 
 // create_file 在当前路径下创建文件
@@ -30,7 +44,12 @@ pub fn create_file<P>(filename: P) -> io::Result<()>
 
 // copy_file 复制文件
 pub fn copy_file(src: &Path, dest: &Path) -> io::Result<()> {
-    if !dest.exists() {
+/*    if !dest.exists() {
+        fs::copy(src, dest)?;
+    }
+    Ok(())*/
+
+    if !dest.exists() || !dest.is_file() {
         fs::copy(src, dest)?;
     }
     Ok(())

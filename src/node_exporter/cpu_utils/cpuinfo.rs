@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 
+#[derive(Debug, Serialize, Deserialize)]
 struct CPUStat {
     usage: f64,
 }

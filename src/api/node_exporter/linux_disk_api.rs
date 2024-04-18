@@ -1,6 +1,0 @@
-use nix::
-
-
-struct DiskInfo {
-
-}

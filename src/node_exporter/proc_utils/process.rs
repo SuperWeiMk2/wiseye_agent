@@ -17,10 +17,10 @@ impl ProcessStatus {
     pub fn processes() -> Result<Vec<Self>, io::Error> {
         let mut processes = Vec::new();
 
-        let pids = Self::init_pids()?;
+        let pids = Self::get_pids()?;
 
         for pid in pids {
-            let name = Self::get_process_name(&pid)?;
+            let name = Self::get_process_name(&pid);
             let command = Self::get_process_cmdline(&pid)?;
             let status_info = Self::get_process_status(pid)?;
 
@@ -44,7 +44,7 @@ impl ProcessStatus {
             let entry = entry?;
             let path = entry.path();
 
-            // 检查是否为目录并且名字可以转化为整数
+/*            // 检查是否为目录并且名字可以转化为整数
             if path.is_dir() && path.file_name()
                 .and_then(|name| name.to_str())
                 .map_or(false, |name| name.parse::<u32>().is_ok())
@@ -53,10 +53,27 @@ impl ProcessStatus {
                 process_pids.push(pid);
             }
         }
-        Ok(process_pids)
+        Ok(process_pids)*/
+
+        if path.is_dir() {
+            let file_name = path.file_name().and_then(|name| name.to_str());
+
+            if let Some(name) = file_name {
+                match name.parse::<u32>() {
+                    Ok(pid) => process_pids.push(pid),
+                    Err(err) => return Err(io::Error::new(
+                        io::ErrorKind::InvalidInput,
+                        format!("Failed to parse PID: {}", err),
+                    )),
+                }
+            }
+        }
+    }
+    Ok(process_pids)
     }
 
-    pub fn get_process_name(pid: &u32) {
+    pub fn get_process_name(pid: &u32) -> String{
+        "TODO".parse().unwrap()
     }
 
     fn get_process_cmdline(pid: &u32) -> Result<String, io::Error> {

@@ -9,7 +9,7 @@ pub async fn process_api() -> Router {
         .route("/proc-status", get(processes_handler))
 }
 
-async fn processes_handler() -> Result<Json<Vec<ProcessStatus>>, io::Error> {
+async fn processes_handler() -> Result<Json<Vec<ProcessStatus>>, axum::Error> {
     let processes = ProcessStatus::processes()?;
 
     Ok(Json(processes))

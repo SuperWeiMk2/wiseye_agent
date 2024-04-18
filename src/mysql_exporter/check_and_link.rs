@@ -1,6 +1,6 @@
 use std::io;
 use std::process::{Command, ExitStatus};
-use sqlx::{Connection, MySqlConnection};
+use sqlx::{Connection, Error, MySqlConnection};
 
 fn check_mysql_version() -> Result<ExitStatus, io::Error> {
     let mut cmd = Command::new("mysql");
@@ -11,7 +11,7 @@ fn check_mysql_version() -> Result<ExitStatus, io::Error> {
 
 }
 
-async fn mysql_connection() -> MySqlConnection {
+async fn mysql_connection() -> Result<MySqlConnection, Error> {
     MySqlConnection::connect("mysql://wiseye:wiseye@localhost/database")
-        .await?
+        .await
 }
